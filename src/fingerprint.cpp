@@ -222,18 +222,23 @@ static std::string base64_urlsafe_nopad(const uint8_t *data, size_t len) {
 }
 
 int main(int argc, char** argv) {
-    // Parse optional arguments: --salt or --extra-salt <value>
+    // Parse optional arguments:
+    //   --salt <value> (alias: --extra-salt)
+    //   --machine-id-file <path> (testing/override)
     std::string salt;
+    std::string machine_id_file;
     for (int i = 1; i < argc; ++i) {
         std::string a = argv[i];
         if ((a == "--salt" || a == "--extra-salt") && i + 1 < argc) {
             salt = argv[++i];
+        } else if ((a == "--machine-id-file") && i + 1 < argc) {
+            machine_id_file = argv[++i];
         }
     }
 
     // Collect input components (present parts only)
     std::vector<std::string> parts;
-    std::string machine_id = read_file("/etc/machine-id");
+    std::string machine_id = machine_id_file.empty() ? read_file("/etc/machine-id") : read_file(machine_id_file);
     if (!machine_id.empty()) {
         parts.push_back(std::string("mid:") + machine_id);
     }
