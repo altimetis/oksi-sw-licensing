@@ -27,6 +27,7 @@ from fingerprint import generate_fingerprint
 from keygen_crypto import verify_http_response_signature
 
 import argparse
+import atexit
 import shlex
 import dataclasses
 import functools
@@ -35,6 +36,29 @@ import json
 import datetime
 import os
 import pathlib
+try:
+    import readline  # builtin on Unix; provides in-process line editing/history
+except Exception:  # pragma: no cover - Windows or minimal Python builds
+    try:
+        # Windows-compatible readline implementation
+        import pyreadline3 as readline  # type: ignore
+    except Exception:
+        class _NoReadline:
+            def read_history_file(self, *a, **kw):
+                pass
+            def write_history_file(self, *a, **kw):
+                pass
+            def set_history_length(self, *a, **kw):
+                pass
+            def parse_and_bind(self, *a, **kw):
+                pass
+            def add_history(self, *a, **kw):
+                pass
+            def get_current_history_length(self):
+                return 0
+            def get_history_item(self, *a, **kw):
+                return None
+        readline = _NoReadline()  # type: ignore
 import platform
 import sys
 import time
@@ -49,10 +73,12 @@ from urllib.parse import urlparse, unquote, urljoin
 
 DEFAULT_BASE_URL = "https://api.keygen.sh"         # adjust if self-hosting
 DEFAULT_ACCOUNT_ID = "b4ddeca5-0b33-485f-94bb-20c229fecd44"
-DEFAULT_PRODUCT_ID = "01cfbf10-7a05-467b-8031-97b927fea025" # e.g., "prod_omniscience"
+DEFAULT_PRODUCT_ID = "01cfbf10-7a05-467b-8031-97b927fea025"
 DEFAULT_LICENSE_KEY_FILE = (pathlib.Path.cwd() / ".oksi" / "license.key")
 DEFAULT_KEYGEN_PUBKEY = "89d96e37fe21302d0a8ff8f9c2509f480ec6c6f28ec9645514a4043e3b29142b"
 
+# Persistent interactive history
+HISTORY_FILE = pathlib.Path.home() / ".oksi" / "oksi-license.history"
 CONFIG_PATH = pathlib.Path.home() / ".oksi" / "license-cli.toml"
 USER_AGENT = "OKSI-License-CLI/1.0 (+https://oksi.ai)"
 
@@ -722,7 +748,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     sub.add_parser("whoami", help="Show authenticated identity")
 
-    sub_status = sub.add_parser("status", help="Show license pool status")
+    sub.add_parser("status", help="Show license pool status")
 
     sub_activate = sub.add_parser("activate", help="Activate this machine")
     sub_activate.add_argument("product_id", help="Product to activate against")
@@ -787,6 +813,26 @@ def run_once(cfg: Config, parser: argparse.ArgumentParser, args: argparse.Namesp
 
 
 def interactive_loop(cfg: Config, parser: argparse.ArgumentParser) -> int:
+    # Setup history: load existing, persist on exit
+    try:
+        HISTORY_FILE.parent.mkdir(parents=True, exist_ok=True)
+        if HISTORY_FILE.exists():
+            try:
+                readline.read_history_file(str(HISTORY_FILE))
+            except Exception:
+                pass
+        readline.set_history_length(1000)
+        # Enable common key bindings (optional; up/down for history works by default)
+        try:
+            readline.parse_and_bind("tab: complete")
+            readline.parse_and_bind("set editing-mode emacs")
+        except Exception:
+            pass
+        atexit.register(lambda: _write_history_safely())
+    except Exception:
+        # History is best-effort; continue without persistence if setup fails
+        pass
+
     print("[interactive] OKSI License CLI — type 'help' or 'exit'")
     try:
         while True:
@@ -797,6 +843,14 @@ def interactive_loop(cfg: Config, parser: argparse.ArgumentParser) -> int:
                 break
             if not line:
                 continue
+            # Add to history if not a duplicate of the previous entry
+            try:
+                hlen = readline.get_current_history_length()
+                last = readline.get_history_item(hlen) if hlen > 0 else None
+                if line and line != last:
+                    readline.add_history(line)
+            except Exception:
+                pass
             if line.lower() in {"exit", "quit", "q"}:
                 break
             if line.lower() in {"help", "?"}:
@@ -847,6 +901,12 @@ def interactive_loop(cfg: Config, parser: argparse.ArgumentParser) -> int:
         return 130
     return 0
 
+def _write_history_safely() -> None:
+    try:
+        HISTORY_FILE.parent.mkdir(parents=True, exist_ok=True)
+        readline.write_history_file(str(HISTORY_FILE))
+    except Exception:
+        pass
 
 def main(argv: list[str] | None = None) -> int:
     argv = argv or sys.argv[1:]

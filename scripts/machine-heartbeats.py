@@ -14,13 +14,13 @@ def to_error_message(errs):
 
   return ', '.join(map(lambda e: f"{e['title']}: {e['detail']}", errs))
 
-def validate_license_key_with_fingerprint(license_key, machine_fingerprint):
+def validate_license_key_with_fingerprint(account_id, license_key, machine_fingerprint):
   """
   Validates a license key scoped to a machine fingerprint. Returns a validation code and the license's ID.
   """
 
   validation = requests.post(
-    f"https://api.keygen.sh/v1/accounts/{KEYGEN_ACCOUNT_ID}/licenses/actions/validate-key",
+    f"https://api.keygen.sh/v1/accounts/{account_id}/licenses/actions/validate-key",
     headers={
       'Content-Type': 'application/vnd.api+json',
       'Accept': 'application/vnd.api+json'
@@ -53,15 +53,15 @@ def validate_license_key_with_fingerprint(license_key, machine_fingerprint):
 
   return validation_code, license_id
 
-def activate_machine_for_license(license_id, machine_fingerprint):
+def activate_machine_for_license(account_id, license_id, machine_fingerprint, license_key):
   """
   Activates a machine for a license. Returns the activated machine's ID.
   """
 
   activation = requests.post(
-    f"https://api.keygen.sh/v1/accounts/{KEYGEN_ACCOUNT_ID}/machines",
+    f"https://api.keygen.sh/v1/accounts/{account_id}/machines",
     headers={
-      'Authorization': f"License {KEYGEN_LICENSE_KEY}",
+      'Authorization': f"License {license_key}",
       'Content-Type': 'application/vnd.api+json',
       'Accept': 'application/vnd.api+json'
     },
@@ -94,15 +94,15 @@ def activate_machine_for_license(license_id, machine_fingerprint):
 
   return machine_id
 
-def deactivate_machine(machine_id):
+def deactivate_machine(account_id, machine_id, license_key):
   """
   Deactivates a machine. Returns a boolean indicating success or failure.
   """
 
   deactivation = requests.delete(
-    f"https://api.keygen.sh/v1/accounts/{KEYGEN_ACCOUNT_ID}/machines/{machine_id}",
+    f"https://api.keygen.sh/v1/accounts/{account_id}/machines/{machine_id}",
     headers={
-      'Authorization': f"License {KEYGEN_LICENSE_KEY}",
+      'Authorization': f"License {license_key}",
       'Accept': 'application/vnd.api+json'
     }
   )
@@ -120,26 +120,26 @@ def deactivate_machine(machine_id):
 
   return True
 
-def deactivate_machine_on_exit(machine_id):
+def deactivate_machine_on_exit(account_id, machine_id, license_key):
   """
   Deactivates a machine on exit signal. Exits program with exit code indicating deactivation success or failure.
   """
 
-  ok = deactivate_machine(machine_fingerprint)
+  ok = deactivate_machine(account_id, machine_fingerprint, license_key)
   if ok:
     sys.exit(0)
   else:
     sys.exit(1)
 
-def ping_heartbeat_for_machine(machine_id):
+def ping_heartbeat_for_machine(account_id, machine_id, license_key):
   """
   Performs a hearbeat ping for a machine. Returns a boolean indicating success or failure.
   """
 
   ping = requests.post(
-    f"https://api.keygen.sh/v1/accounts/{KEYGEN_ACCOUNT_ID}/machines/{machine_id}/actions/ping-heartbeat",
+    f"https://api.keygen.sh/v1/accounts/{account_id}/machines/{machine_id}/actions/ping-heartbeat",
     headers={
-      'Authorization': f"License {KEYGEN_LICENSE_KEY}",
+      'Authorization': f"License {license_key}",
       'Accept': 'application/vnd.api+json'
     }
   ).json()
@@ -156,14 +156,14 @@ def ping_heartbeat_for_machine(machine_id):
 
   return True
 
-def maintain_hearbeat_for_machine(machine_id):
+def maintain_hearbeat_for_machine(account_id, machine_id, license_key):
   """
   Performs minutely hearbeat pings for a machine on a loop.
   """
 
-  timer = threading.Timer(60.0, lambda: maintain_hearbeat_for_machine(machine_id))
+  timer = threading.Timer(60.0, lambda: maintain_hearbeat_for_machine(account_id, machine_id, license_key))
 
-  ok = ping_heartbeat_for_machine(machine_id)
+  ok = ping_heartbeat_for_machine(account_id, machine_id, license_key)
   if not ok:
     sys.exit(1)
 
@@ -175,15 +175,15 @@ parser.add_argument('--license-key', required=True, help='Keygen license key')
 parser.add_argument('--account-id', required=True, help='Keygen account ID')
 args = parser.parse_args()
 
-# Export as module-level globals used by helpers
-KEYGEN_LICENSE_KEY = args.license_key
-KEYGEN_ACCOUNT_ID = args.account_id
+# Export parsed args to locals used by helpers
+account_id = args.account_id
+license_key = args.license_key
 
 # Fingerprint the current device and get the license key
 machine_fingerprint = generate_fingerprint()
 
 # Validate the license key scoped to the current machine fingerprint
-validation_code, license_id = validate_license_key_with_fingerprint(KEYGEN_LICENSE_KEY, machine_fingerprint)
+validation_code, license_id = validate_license_key_with_fingerprint(account_id, license_key, machine_fingerprint)
 if validation_code == 'NOT_FOUND':
   sys.exit(1)
 
@@ -192,12 +192,12 @@ activation_is_required = validation_code == 'NO_MACHINE' or \
                          validation_code == 'NO_MACHINES' or \
                          validation_code == 'FINGERPRINT_SCOPE_MISMATCH'
 if activation_is_required:
-  machine_id = activate_machine_for_license(license_id, machine_fingerprint)
+  machine_id = activate_machine_for_license(account_id, license_id, machine_fingerprint, license_key)
   if machine_id == None:
     sys.exit(1)
 
 # Attempt to deactivate machine on process exit
-signal.signal(signal.SIGINT, lambda _s, _f: deactivate_machine_on_exit(machine_fingerprint))
+signal.signal(signal.SIGINT, lambda _s, _f: deactivate_machine_on_exit(account_id, machine_fingerprint, license_key))
 
 # Start a heartbeat ping loop
-maintain_hearbeat_for_machine(machine_fingerprint)
+maintain_hearbeat_for_machine(account_id, machine_fingerprint, license_key)
