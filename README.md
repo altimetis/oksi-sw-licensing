@@ -128,13 +128,9 @@ Customer-facing CLI and lightweight native helper for machine fingerprinting and
 
 - Latest download base URL (for installers):
   - `GH_BASE="https://github.com/<owner>/<repo>/releases/latest/download"`
-  - Example install from GitHub Releases:
+  - Example install from GitHub Releases (flat assets):
     - `curl -fsSL "$GH_BASE/install.sh" | sudo OKSI_DOWNLOAD_BASE="$GH_BASE" bash`
 
-- Note about asset layout:
-  - The installer downloads:
-    - Python bundle: `$BASE/oksi-sw-licensing-python.tar.gz`
-    - Fingerprint binaries: `$BASE/bin/oksi_fingerprint-<os>-<arch>`
-  - GitHub Releases serves assets from a flat namespace (no subdirectories). If you intend to use GitHub Releases directly as the host, either:
-    - Host assets on a domain that preserves directories (e.g., S3/CDN at `downloads.example.com/oksi-sw-licensing/...`), or
-    - Adjust `scripts/distribution/install.sh` to drop the `bin/` prefix when forming fingerprint download URLs.
+- Asset layout (flat):
+  - Python bundle: `$BASE/oksi-sw-licensing-python.tar.gz`
+  - Fingerprint binaries: `$BASE/oksi_fingerprint-<os>-<arch>`

@@ -131,5 +131,5 @@ gh-release: dist-all gh-check gh-tag
 	gh release create "$(VERSION)" --title "OKSI SW Licensing $(VERSION)" --notes "Distribution release $(VERSION)" "$${ASSETS[@]}" || { \
 	  echo "If the release exists, use: gh release upload $(VERSION) <assets> --clobber"; exit 1; }
 	@echo "Marking as latest..."; gh release edit "$(VERSION)" --latest
-	@echo "Done. Download base (latest): https://github.com/$$(git config --get remote.origin.url | sed -E 's#.*github.com[:/](.+/.+)\.git#\1#')/releases/latest/download"
-	@echo "NOTE: install.sh expects fingerprint assets under 'bin/'. GitHub Releases are flat; either host elsewhere or update install.sh FP_URL to drop 'bin/'."
+	@slug=$$(gh repo view --json nameWithOwner -q .nameWithOwner 2>/dev/null || echo "unknown/unknown"); \
+	 echo "Done. Download base (latest): https://github.com/$$slug/releases/latest/download";

@@ -153,7 +153,7 @@ MANIFEST_PATH="$APP_DIR/manifest.txt"
 echo "$CLI_SHIM" > "$MANIFEST_PATH"
 
 if [[ "$INSTALL_FP" -eq 1 ]]; then
-  FP_URL="$BASE_URL/bin/oksi_fingerprint-${OS}-${ARCH}"
+  FP_URL="$BASE_URL/oksi_fingerprint-${OS}-${ARCH}"
   FP_DST="$BIN_DIR/oksi_fingerprint"
   log "Downloading fingerprint helper..."
   if download "$FP_URL" "$TMPDIR/oksi_fingerprint"; then
