@@ -3,21 +3,17 @@
 Customer‑facing CLI and lightweight native helper for machine fingerprinting and license activation against Keygen.
 
 **Repo Points**
-- CLI: `scripts/oksi_license_cli.py:1`
+- CLI: `scripts/oksi_license_cli.py`
 - Fingerprint helper (C++): `src/fingerprint.cpp`
-- CMake target: `CMakeLists.txt:1`
+- CMake target: `CMakeLists.txt`
 - Python fingerprint fallback: `scripts/fingerprint.py`
 
 **Requirements**
 - Python 3.10+ (CLI)
-- Pip packages: `requests`, `cryptography`, `tomli`, `tomli-w`
 - C++17 toolchain + CMake 3.15+ (optional, native fingerprint helper)
 
 Install Python deps:
 - `python -m pip install -r requirements.txt`
-
-Optional: if your Python lacks TOML I/O libs:
-- `python -m pip install tomli tomli-w`
 
 **Keygen Setup**
 - Account ID: obtain from your Keygen dashboard.

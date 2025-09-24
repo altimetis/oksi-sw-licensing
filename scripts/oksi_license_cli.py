@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-OKSI License CLI (customer-facing)
+OKSI Software License CLI (customer-facing)
 
-Features (as wired by current arguments)
+Features
 - login: obtain and store a user token from email/password (stores token in a file in the current directory for Docker access).
 - logout: remove any stored token (file and config).
 - whoami: display the authenticated identity.
@@ -73,8 +73,6 @@ from urllib.parse import urlparse, unquote, urljoin
 
 DEFAULT_BASE_URL = "https://api.keygen.sh"         # adjust if self-hosting
 DEFAULT_ACCOUNT_ID = "b4ddeca5-0b33-485f-94bb-20c229fecd44"
-DEFAULT_PRODUCT_ID = "01cfbf10-7a05-467b-8031-97b927fea025"
-DEFAULT_LICENSE_KEY_FILE = (pathlib.Path.cwd() / ".oksi" / "license.key")
 DEFAULT_KEYGEN_PUBKEY = "89d96e37fe21302d0a8ff8f9c2509f480ec6c6f28ec9645514a4043e3b29142b"
 
 # Persistent interactive history
