@@ -132,4 +132,4 @@ gh-release: dist-all gh-check gh-tag
 	  echo "If the release exists, use: gh release upload $(VERSION) <assets> --clobber"; exit 1; }
 	@echo "Marking as latest..."; gh release edit "$(VERSION)" --latest
 	@slug=$$(gh repo view --json nameWithOwner -q .nameWithOwner 2>/dev/null || echo "unknown/unknown"); \
-	 echo "Done. Download base (latest): https://github.com/$$slug/releases/latest/download";
+	 echo "Done. Download base (latest): https://github.com/$$slug/releases/latest";
