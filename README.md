@@ -5,7 +5,7 @@ Customer-facing CLI and lightweight native helper for machine fingerprinting and
 ## Install (Customers)
 
 - One-liner:
-  - `curl -fsSL https://downloads.example.com/oksi-sw-licensing/releases/latest/install.sh | sudo bash`
+  - `curl -fsSL https://github.com/tpayne-altimetis/oksi-sw-licensing/releases/latest/install.sh | sudo bash`
 - Installs:
   - CLI shim: `/usr/local/bin/oksi-license`
   - Native helper: `/usr/local/bin/oksi_fingerprint` (if available for your platform)
@@ -128,9 +128,9 @@ Customer-facing CLI and lightweight native helper for machine fingerprinting and
 
 - Latest download base URL (for installers):
   - `GH_BASE="https://github.com/<owner>/<repo>/releases/latest/download"`
-  - Example install from GitHub Releases (flat assets):
+  - Example install from GitHub Releases:
     - `curl -fsSL "$GH_BASE/install.sh" | sudo OKSI_DOWNLOAD_BASE="$GH_BASE" bash`
 
-- Asset layout (flat):
+- Asset layout:
   - Python bundle: `$BASE/oksi-sw-licensing-python.tar.gz`
   - Fingerprint binaries: `$BASE/oksi_fingerprint-<os>-<arch>`
