@@ -1,7 +1,6 @@
 # fingerprint.py
 import base64
 import hashlib
-import platform
 import pathlib
 import subprocess
 import shutil
@@ -57,8 +56,6 @@ def generate_fingerprint(extra_salt: str | None = None) -> str:
     if cpp:
         return cpp
 
-    import uuid
-
     components: list[str] = []
 
     # Linux machine-id is stable across reboots but resets on OS reinstall.
@@ -67,6 +64,7 @@ def generate_fingerprint(extra_salt: str | None = None) -> str:
         components.append(f"mid:{machine_id}")
 
     # # MAC (best-effort); if randomized or virtualized it may change.
+    # import uuid
     # mac = uuid.getnode()
     # components.append(f"mac:{mac:012x}")
 

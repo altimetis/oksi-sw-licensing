@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-add_executable(oksi_fingerprint src/fingerprint.cpp)
+add_executable(oksi_fingerprint fingerprint.cpp)
 
 # Place runtime outputs under the bin tree
 set_target_properties(oksi_fingerprint PROPERTIES
