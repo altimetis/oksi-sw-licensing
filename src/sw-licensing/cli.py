@@ -725,8 +725,8 @@ def ensure_token(cfg: Config, cli_token: str | None) -> str:
 
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
-        prog="oksi-license",
-        description="OKSI Licensing CLI (customer-facing)",
+        prog="oksi-sw-license",
+        description="OKSI Software Licensing CLI (customer-facing)",
     )
     p.add_argument("--api-token", help="API token (overrides config/env)")
     p.add_argument("--base-url", default=DEFAULT_BASE_URL)

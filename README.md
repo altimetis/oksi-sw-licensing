@@ -1,46 +1,38 @@
 # OKSI Software Licensing
 
-Customer‑facing CLI and lightweight native helper for machine fingerprinting and license activation against Keygen.
+Customer-facing CLI and lightweight native helper for machine fingerprinting and license activation against Keygen.
 
-**Repo Points**
-- CLI: `scripts/oksi_license_cli.py`
-- Fingerprint helper (C++): `src/fingerprint.cpp`
-- CMake target: `CMakeLists.txt`
-- Python fingerprint fallback: `scripts/fingerprint.py`
+## Install (Customers)
 
-**Requirements**
-- Python 3.10+ (CLI)
-- C++17 toolchain + CMake 3.15+ (optional, native fingerprint helper)
+- One-liner:
+  - `curl -fsSL https://downloads.example.com/oksi-sw-licensing/releases/latest/install.sh | sudo bash`
+- Installs:
+  - CLI shim: `/usr/local/bin/oksi-license`
+  - Native helper: `/usr/local/bin/oksi_fingerprint` (if available for your platform)
+  - App + venv: `/opt/oksi/licensing`
+- Requirements on target machine:
+  - Linux with `bash` and `curl` or `wget`
+  - Python `>= 3.10` (for creating an isolated virtualenv)
+  - Root privileges (to write under `/usr/local` and `/opt`)
 
-Install Python deps:
-- `python -m pip install -r requirements.txt`
+## Quick Start
 
-**Keygen Setup**
-- Account ID: obtain from your Keygen dashboard.
-- Product(s): create a product and note its Product ID.
-- Licenses: create license(s)/pool for the product and ensure the policy allows machine activations.
-- API token: either a user token (via CLI login) or a customer token from dashboard.
-- HTTP response signing (recommended):
-  - The CLI verifies response signatures using an Ed25519 public key.
-  - Update `DEFAULT_KEYGEN_PUBKEY` in `scripts/oksi_license_cli.py` with your account’s public key if different.
-  - If self‑hosting, set `--base-url` to your Keygen domain; host is enforced during signature checks (`scripts/keygen_crypto.py`).
+- Login: `oksi-license login`
+- Who am I: `oksi-license whoami`
+- List products: `oksi-license list-products`
+- Activate a machine: `oksi-license activate <PRODUCT_ID>`
+- Validate a license key: `oksi-license validate-key <KEY>`
+- Deactivate the machine: `oksi-license deactivate <PRODUCT_ID>`
 
-**Build Native Fingerprint Helper (optional)**
-- Configure + build:
-  - `cmake -S . -B build -DCMAKE_BUILD_TYPE=Release`
-  - `cmake --build build --config Release`
-- Binary: `build/bin/oksi_fingerprint`
-- Install to PATH (optional): `cmake --install build --prefix ~/.local`
-- Usage:
-  - `build/bin/oksi_fingerprint`
-  - `build/bin/oksi_fingerprint --salt <scope-or-product>`
-- The Python CLI prefers this binary when present in PATH or next to the scripts (`scripts/fingerprint.py`).
+## Uninstall
 
-**CLI Overview**
-- Entry: `python scripts/oksi_license_cli.py [GLOBAL FLAGS] <command> [ARGS]`
-- Globals:
+- `sudo /usr/local/bin/oksi-sw-licensing-uninstall`
+
+## Configuration
+
+- Global flags:
   - `--base-url` (default `https://api.keygen.sh`)
-  - `--account-id` (set to your Account ID)
+  - `--account-id` (your Keygen Account ID)
   - `--api-token` (overrides other token sources)
   - `--interactive` (REPL mode)
 - Token precedence (highest → lowest):
@@ -48,62 +40,72 @@ Install Python deps:
   - env `OKSI_API_TOKEN`
   - token file (default `./.oksi/api_token`; override path via `OKSI_API_TOKEN_FILE`)
   - config file `~/.oksi/license-cli.toml`
+- Files written:
+  - Token file: `./.oksi/api_token`
+  - License key: `.oksi/license.<PRODUCT_ID>.key` (0600 when possible)
+  - REPL history: `~/.oksi/oksi-license.history`
 
-**Subcommands**
-- `login` — obtain and save a user token
-  - `python scripts/oksi_license_cli.py login --email you@example.com --password-stdin < secret.txt`
-- `logout` — forget saved token
-  - `python scripts/oksi_license_cli.py logout`
-- `whoami` — show authenticated identity
-  - `python scripts/oksi_license_cli.py whoami`
-- `list-products` — list products (name and id)
-  - `python scripts/oksi_license_cli.py list-products`
-- `status` — summarize license pool counts by product
-  - `python scripts/oksi_license_cli.py status`
-- `activate <product_id>` — claim an unactivated license for this machine
-  - `python scripts/oksi_license_cli.py activate <PRODUCT_ID>`
-  - Writes plaintext key to `.oksi/license.<PRODUCT_ID>.key` by default; override with `--license-key-file`.
-  - Fingerprint override: `--fingerprint <value>`.
-- `deactivate <product_id>` — release this machine from the product
-  - `python scripts/oksi_license_cli.py deactivate <PRODUCT_ID>`
-  - Fingerprint override: `--fingerprint <value>`.
-- `validate-key <LICENSE_KEY>` — online validation scoped to this machine
-  - `python scripts/oksi_license_cli.py validate-key <KEY>`
-  - Fingerprint override: `--fingerprint <value>`.
+## Fingerprinting
 
-**Interactive Mode (REPL)**
-- Start: `python scripts/oksi_license_cli.py --interactive`
-- Commands: `login`, `whoami`, `list-products`, `status`, `activate`, `deactivate`, `validate-key`.
-- History is persisted to `~/.oksi/oksi-license.history`.
+- Prefers native helper if present in PATH: `oksi_fingerprint`
+- Fallback: Python implementation in `src/sw-licensing/fingerprint.py`
+- Deterministic input: Linux `/etc/machine-id`; optional salt for scoping
+- Override per command: `--fingerprint <value>`
 
-**Fingerprinting**
-- Default behavior: use native helper if available; otherwise Python fallback (`scripts/fingerprint.py`).
-- Deterministic input: Linux `/etc/machine-id`; optional `--salt` for scoping (`src/fingerprint.cpp`).
-- Override fingerprint per command with `--fingerprint`.
+## From Source (Developers)
 
-**Files Created**
-- Token file: `./.oksi/api_token` by default (set by `login` or manually) (`scripts/oksi_license_cli.py`).
-- License key file: `.oksi/license.<PRODUCT_ID>.key` on `activate` (permissions 0600 when possible).
+- Setup:
+  - `python -m venv .venv && . .venv/bin/activate`
+  - `pip install -r requirements.txt`
+- Run CLI directly:
+  - `python src/sw-licensing/cli.py --help`
+  - or `python -m sw-licensing.cli --help` (ensure `src` is on `PYTHONPATH`)
+- Build native fingerprint helper (optional):
+  - Manual (host build):
+    - `cmake -S src/fingerprint -B build -DCMAKE_BUILD_TYPE=Release`
+    - `cmake --build build --config Release`
+    - Output: `build/bin/oksi_fingerprint`
+  - Scripted (host or cross):
+    - Host only: `bash scripts/distribution/make-fingerprint.sh`
+    - Cross-compile (Linux): `TARGETS="linux-amd64 linux-arm64" bash scripts/distribution/make-fingerprint.sh`
+    - Requirements for cross: `x86_64-linux-gnu-g++` and/or `aarch64-linux-gnu-g++`
+    - Outputs: `dist/bin/oksi_fingerprint-<os>-<arch>`
 
-**Docker (optional)**
-- Interactive activation image: `docker/activate/Dockerfile:1`
-  - Convenience script: `./run-activate.sh`
-  - Example: `./run-activate.sh --interactive`
-- Verification image: `docker/verify/Dockerfile`
-  - Convenience script: `./run-oksi-sw.sh`
-  - Example: `./run-oksi-sw.sh validate-key <KEY>`
-- Both scripts mount `/etc/machine-id` (read‑only) and `./.oksi` for tokens/keys.
+## Repo Layout
 
-**Troubleshooting**
+- CLI: `src/sw-licensing/cli.py`
+- Python fingerprint fallback: `src/sw-licensing/fingerprint.py`
+- Crypto helpers: `src/sw-licensing/keygen_crypto.py`
+- Native helper (C++): `src/fingerprint/fingerprint.cpp`
+- Distribution tooling: `scripts/distribution/`
+  - Installer: `scripts/distribution/install.sh`
+  - Uninstaller: `scripts/distribution/uninstall.sh`
+  - Bundlers: `scripts/distribution/make-python-bundle.sh`, `scripts/distribution/make-fingerprint.sh`
+  - Makefile helpers: `make dist-fingerprint TARGETS="linux-amd64 linux-arm64"`, `make dist-python`, `make release-stage`
+
+## Keygen Setup Notes
+
+- Account ID: obtain from your Keygen dashboard
+- Create product(s) and license pool(s) with machine activation policy
+- API token: user token (via CLI `login`) or customer token
+- HTTP response signing (recommended):
+  - The CLI verifies signature using an Ed25519 public key
+  - Update `DEFAULT_KEYGEN_PUBKEY` in `src/sw-licensing/cli.py` if your account key differs
+  - If self-hosting, set `--base-url`; host is enforced during signature checks
+
+## Docker (Optional)
+
+- Activation convenience script: `run-activate.sh`
+- Verification convenience script: `run-oksi-sw.sh`
+- Both mount `/etc/machine-id` (read-only) and `./.oksi` for tokens/keys
+
+## Troubleshooting
+
 - Signature verification failed:
-  - Ensure `--base-url` matches your Keygen domain.
-  - Update `DEFAULT_KEYGEN_PUBKEY` in `scripts/oksi_license_cli.py` to your account’s HTTP signing public key.
+  - Ensure `--base-url` matches your Keygen domain
+  - Update `DEFAULT_KEYGEN_PUBKEY` in `src/sw-licensing/cli.py`
 - Auth errors:
-  - Pass `--api-token` explicitly to rule out precedence issues.
-  - Check `./.oksi/api_token` and `~/.oksi/license-cli.toml`.
+  - Pass `--api-token` explicitly to rule out precedence issues
+  - Check `./.oksi/api_token` and `~/.oksi/license-cli.toml`
 - Pool exhausted:
-  - Add licenses or deactivate existing machine activations for the product.
-
-**Notes**
-- The CLI verifies HTTP responses with `verify_http_response_signature` (`scripts/keygen_crypto.py`).
-- The native fingerprint helper is deterministic and avoids intrusive identifiers; see `src/fingerprint.cpp`.
+  - Add licenses or deactivate existing machine activations for the product
