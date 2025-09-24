@@ -1,1 +1,11 @@
 *.sh text eol=lf
+Makefile text eol=lf
+*.mk text eol=lf
+*.py text eol=lf
+*.cpp text eol=lf
+*.hpp text eol=lf
+*.h text eol=lf
+
+# Treat common release artifacts as binary
+*.tar.gz binary
+dist/bin/* binary
