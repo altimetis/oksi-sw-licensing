@@ -94,3 +94,39 @@ uninstall-local:
 .PHONY: clean
 clean: clean-fingerprint
 	rm -rf dist tmp build
+
+# ----------------------
+# GitHub Releases (gh)
+# ----------------------
+
+VERSION ?= v0.1.0
+
+.PHONY: gh-check
+gh-check:
+	@gh --version >/dev/null 2>&1 || { echo "GitHub CLI 'gh' not found. Install from https://cli.github.com/" >&2; exit 1; }
+	@gh auth status || true
+
+.PHONY: gh-tag
+gh-tag:
+	@if git rev-parse "$(VERSION)" >/dev/null 2>&1; then \
+	  echo "Tag $(VERSION) already exists"; \
+	else \
+	  git tag -a "$(VERSION)" -m "Release $(VERSION)"; \
+	  git push origin "$(VERSION)"; \
+	fi
+
+.PHONY: gh-release
+gh-release: dist-all gh-check gh-tag
+	@echo "Creating GitHub Release $(VERSION) and uploading assets..."
+	@ASSETS=( \
+	  scripts/distribution/install.sh \
+	  scripts/distribution/uninstall.sh \
+	  dist/oksi-sw-licensing-python.tar.gz \
+	  $$(ls dist/bin/oksi_fingerprint-* 2>/dev/null || true) \
+	); \
+	set -e; \
+	gh release create "$(VERSION)" --title "OKSI SW Licensing $(VERSION)" --notes "Distribution release $(VERSION)" "$${ASSETS[@]}" || { \
+	  echo "If the release exists, use: gh release upload $(VERSION) <assets> --clobber"; exit 1; }
+	@echo "Marking as latest..."; gh release edit "$(VERSION)" --latest
+	@echo "Done. Download base (latest): https://github.com/$$(git config --get remote.origin.url | sed -E 's#.*github.com[:/](.+/.+)\.git#\1#')/releases/latest/download"
+	@echo "NOTE: install.sh expects fingerprint assets under 'bin/'. GitHub Releases are flat; either host elsewhere or update install.sh FP_URL to drop 'bin/'."
