@@ -28,8 +28,8 @@ include(CTest)
 if(BUILD_TESTING)
     enable_testing()
     # Paths to test data files in source tree
-    set(TEST_MID_ABCD "${CMAKE_CURRENT_SOURCE_DIR}/tests/data/mid_abcd.txt")
-    set(TEST_MID_TMID "${CMAKE_CURRENT_SOURCE_DIR}/tests/data/mid_test_machine_id.txt")
+    set(TEST_MID_ABCD "${CMAKE_CURRENT_SOURCE_DIR}/../../tests/data/mid_abcd.txt")
+    set(TEST_MID_TMID "${CMAKE_CURRENT_SOURCE_DIR}/../../tests/data/mid_test_machine_id.txt")
 
     # Helper to register a CLI test with expected output regex
     function(add_fp_test name expected)
