@@ -29,7 +29,10 @@ help:
 	@echo "  install-local         Install using local server into tmp prefixes"
 	@echo "  uninstall-local       Uninstall from tmp prefixes"
 	@echo "  clean                 Remove build/, dist/, tmp/"
-	@echo "Variables: PY, CMAKE, PORT, BASE, PREFIX, ROOT, SUDO"
+	@echo "  gh-check              Verify GitHub CLI and auth"
+	@echo "  gh-tag                Create/push annotated tag VERSION"
+	@echo "  gh-release            Build dist + create GitHub Release and upload assets"
+	@echo "Variables: PY, CMAKE, PORT, BASE, PREFIX, ROOT, SUDO, VERSION, TARGETS"
 
 .PHONY: venv
 venv:

@@ -109,3 +109,32 @@ Customer-facing CLI and lightweight native helper for machine fingerprinting and
   - Check `./.oksi/api_token` and `~/.oksi/license-cli.toml`
 - Pool exhausted:
   - Add licenses or deactivate existing machine activations for the product
+
+## GitHub Releases
+
+- Prerequisites:
+  - Install GitHub CLI (`gh`) and authenticate: `gh auth login`
+
+- Build artifacts:
+  - `make dist-python`
+  - `make dist-fingerprint TARGETS="linux-amd64 linux-arm64"` (optional cross-compile)
+
+- Create tag and release (uploads artifacts):
+  - `make gh-release VERSION=v0.1.0`
+  - This will:
+    - Create/push the Git tag `v0.1.0` if it does not exist
+    - Create a GitHub Release and upload: `install.sh`, `uninstall.sh`, the Python bundle, and any built fingerprint binaries
+    - Mark the release as “latest”
+
+- Latest download base URL (for installers):
+  - `GH_BASE="https://github.com/<owner>/<repo>/releases/latest/download"`
+  - Example install from GitHub Releases:
+    - `curl -fsSL "$GH_BASE/install.sh" | sudo OKSI_DOWNLOAD_BASE="$GH_BASE" bash`
+
+- Note about asset layout:
+  - The installer downloads:
+    - Python bundle: `$BASE/oksi-sw-licensing-python.tar.gz`
+    - Fingerprint binaries: `$BASE/bin/oksi_fingerprint-<os>-<arch>`
+  - GitHub Releases serves assets from a flat namespace (no subdirectories). If you intend to use GitHub Releases directly as the host, either:
+    - Host assets on a domain that preserves directories (e.g., S3/CDN at `downloads.example.com/oksi-sw-licensing/...`), or
+    - Adjust `scripts/distribution/install.sh` to drop the `bin/` prefix when forming fingerprint download URLs.
