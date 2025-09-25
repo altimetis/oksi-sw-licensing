@@ -7,10 +7,10 @@ set -euo pipefail
 # - Does not touch global Python modules
 #
 # Usage (remote):
-#   curl -fsSL https://github.com/tpayne-altimetis/oksi-sw-licensing/releases/latest/install.sh | sudo bash
+#   curl -fsSL https://github.com/altimetis/oksi-sw-licensing/releases/latest/install.sh | sudo bash
 #
 # Env overrides:
-#   OKSI_DOWNLOAD_BASE   Base URL for release assets (default: https://github.com/tpayne-altimetis/oksi-sw-licensing/releases/latest)
+#   OKSI_DOWNLOAD_BASE   Base URL for release assets (default: https://github.com/altimetis/oksi-sw-licensing/releases/latest)
 #   OKSI_PREFIX          Install prefix for binaries (default: /usr/local)
 #   OKSI_ROOT            Install root for app (default: /opt/oksi)
 #   OKSI_PYTHON          Python interpreter to use for venv (default: python3)
@@ -28,7 +28,7 @@ umask 022
 log() { echo "[oksi-install] $*"; }
 err() { echo "[oksi-install][error] $*" >&2; }
 
-BASE_URL=${OKSI_DOWNLOAD_BASE:-"https://github.com/tpayne-altimetis/oksi-sw-licensing/releases/latest"}
+BASE_URL=${OKSI_DOWNLOAD_BASE:-"https://github.com/altimetis/oksi-sw-licensing/releases/latest"}
 PREFIX=${OKSI_PREFIX:-"/usr/local"}
 OKSI_ROOT=${OKSI_ROOT:-"/opt/oksi"}
 PYTHON_BIN=${OKSI_PYTHON:-"python3"}
