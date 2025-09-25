@@ -7,7 +7,7 @@ Customer-facing CLI and lightweight native helper for machine fingerprinting and
 - One-liner:
   - `curl -fsSL https://github.com/altimetis/oksi-sw-licensing/releases/latest/install.sh | sudo bash`
 - Installs:
-  - CLI shim: `/usr/local/bin/oksi-license`
+  - CLI shim: `/usr/local/bin/oksi-sw-license`
   - Native helper: `/usr/local/bin/oksi_fingerprint` (if available for your platform)
   - App + venv: `/opt/oksi/licensing`
 - Requirements on target machine:
@@ -17,12 +17,12 @@ Customer-facing CLI and lightweight native helper for machine fingerprinting and
 
 ## Quick Start
 
-- Login: `oksi-license login`
-- Who am I: `oksi-license whoami`
-- List products: `oksi-license list-products`
-- Activate a machine: `oksi-license activate <PRODUCT_ID>`
-- Validate a license key: `oksi-license validate-key <KEY>`
-- Deactivate the machine: `oksi-license deactivate <PRODUCT_ID>`
+- Login: `oksi-sw-license login`
+- Who am I: `oksi-sw-license whoami`
+- List products: `oksi-sw-license list-products`
+- Activate a machine: `oksi-sw-license activate <PRODUCT_ID>`
+- Validate a license key: `oksi-sw-license validate-key <KEY>`
+- Deactivate the machine: `oksi-sw-license deactivate <PRODUCT_ID>`
 
 ## Uninstall
 
@@ -39,11 +39,11 @@ Customer-facing CLI and lightweight native helper for machine fingerprinting and
   - `--api-token` flag
   - env `OKSI_API_TOKEN`
   - token file (default `./.oksi/api_token`; override path via `OKSI_API_TOKEN_FILE`)
-  - config file `~/.oksi/license-cli.toml`
+  - config file `~/.oksi/sw-license-cli.toml`
 - Files written:
   - Token file: `./.oksi/api_token`
   - License key: `.oksi/license.<PRODUCT_ID>.key` (0600 when possible)
-  - REPL history: `~/.oksi/oksi-license.history`
+  - REPL history: `~/.oksi/sw-license.history`
 
 ## Fingerprinting
 
@@ -106,7 +106,7 @@ Customer-facing CLI and lightweight native helper for machine fingerprinting and
   - Update `DEFAULT_KEYGEN_PUBKEY` in `src/sw-licensing/cli.py`
 - Auth errors:
   - Pass `--api-token` explicitly to rule out precedence issues
-  - Check `./.oksi/api_token` and `~/.oksi/license-cli.toml`
+  - Check `./.oksi/api_token` and `~/.oksi/sw-license-cli.toml`
 - Pool exhausted:
   - Add licenses or deactivate existing machine activations for the product
 

@@ -16,7 +16,7 @@ Environment / Config
   1) `--api-token` CLI flag
   2) env `OKSI_API_TOKEN`
   3) token file (default: `./.oksi/api_token`, override path with `OKSI_API_TOKEN_FILE`)
-  4) config file `~/.oksi/license-cli.toml` (key = `api_token`)
+  4) config file `~/.oksi/sw-license-cli.toml` (key = `api_token`)
 - Defaults: license key file `.oksi/license.key`.
 - Fingerprint: pass `--fingerprint` to override; otherwise auto-detected.
 - Requires Python 3.10+
@@ -76,9 +76,9 @@ DEFAULT_ACCOUNT_ID = "b4ddeca5-0b33-485f-94bb-20c229fecd44"
 DEFAULT_KEYGEN_PUBKEY = "89d96e37fe21302d0a8ff8f9c2509f480ec6c6f28ec9645514a4043e3b29142b"
 
 # Persistent interactive history
-HISTORY_FILE = pathlib.Path.home() / ".oksi" / "oksi-license.history"
-CONFIG_PATH = pathlib.Path.home() / ".oksi" / "license-cli.toml"
-USER_AGENT = "OKSI-License-CLI/1.0 (+https://oksi.ai)"
+HISTORY_FILE = pathlib.Path.home() / ".oksi" / "sw-license.history"
+CONFIG_PATH = pathlib.Path.home() / ".oksi" / "sw-license-cli.toml"
+USER_AGENT = "OKSI-SW-License-CLI/1.0 (+https://oksi.ai)"
 
 # File-based token path (cwd by default)
 DEFAULT_TOKEN_FILE = (pathlib.Path(os.getenv("OKSI_API_TOKEN_FILE"))
