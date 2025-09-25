@@ -32,7 +32,7 @@ help:
 	@echo "  gh-check              Verify GitHub CLI and auth"
 	@echo "  gh-tag                Create/push annotated tag VERSION"
 	@echo "  gh-release            Build dist + create GitHub Release and upload assets"
-	@echo "Variables: PY, CMAKE, PORT, BASE, PREFIX, ROOT, SUDO, VERSION, TARGETS"
+	@echo "Variables: PY, CMAKE, PORT, BASE, PREFIX, ROOT, SUDO, VERSION, TARGETS, REPO"
 
 .PHONY: venv
 venv:
@@ -103,6 +103,11 @@ clean: clean-fingerprint
 # ----------------------
 
 VERSION ?= v0.1.0
+# GitHub repository in owner/name form. Auto-detect when possible; override as needed.
+# - Falls back to parsing origin URL if gh isn't configured.
+# - You can override by passing REPO=org/name to make.
+REPO ?= $(shell gh repo view --json nameWithOwner -q .nameWithOwner 2>/dev/null || \
+  git remote get-url origin 2>/dev/null | sed -E 's#(git@|https://)([^/:]+)[:/]([^/]+)/([^/.]+)(\\.git)?#\3/\4#' || echo unknown/unknown)
 
 .PHONY: gh-check
 gh-check:
@@ -128,8 +133,7 @@ gh-release: dist-all gh-check gh-tag
 	  $$(ls dist/bin/oksi_fingerprint-* 2>/dev/null || true) \
 	); \
 	set -e; \
-	gh release create "$(VERSION)" --title "OKSI SW Licensing $(VERSION)" --notes "Distribution release $(VERSION)" "$${ASSETS[@]}" || { \
+	gh release create -R "$(REPO)" "$(VERSION)" --title "OKSI SW Licensing $(VERSION)" --notes "Distribution release $(VERSION)" "$${ASSETS[@]}" || { \
 	  echo "If the release exists, use: gh release upload $(VERSION) <assets> --clobber"; exit 1; }
-	@echo "Marking as latest..."; gh release edit "$(VERSION)" --latest
-	@slug=$$(gh repo view --json nameWithOwner -q .nameWithOwner 2>/dev/null || echo "unknown/unknown"); \
-	 echo "Done. Download base (latest): https://github.com/$$slug/releases/latest";
+	@echo "Marking as latest..."; gh release edit -R "$(REPO)" "$(VERSION)" --latest
+	@echo "Done. Download base (latest): https://github.com/$(REPO)/releases/latest";
