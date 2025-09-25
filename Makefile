@@ -136,4 +136,4 @@ gh-release: dist-all gh-check gh-tag
 	gh release create -R "$(REPO)" "$(VERSION)" --title "OKSI SW Licensing $(VERSION)" --notes "Distribution release $(VERSION)" "$${ASSETS[@]}" || { \
 	  echo "If the release exists, use: gh release upload $(VERSION) <assets> --clobber"; exit 1; }
 	@echo "Marking as latest..."; gh release edit -R "$(REPO)" "$(VERSION)" --latest
-	@echo "Done. Download base (latest): https://github.com/$(REPO)/releases/latest";
+	@echo "Done. Download base (latest): https://github.com/$(REPO)/releases/latest/download";

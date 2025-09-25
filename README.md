@@ -5,7 +5,7 @@ Customer-facing CLI and lightweight native helper for machine fingerprinting and
 ## Install (Customers)
 
 - One-liner:
-  - `curl -fsSL https://github.com/altimetis/oksi-sw-licensing/releases/latest/install.sh | sudo bash`
+  - `curl -fsSL https://github.com/altimetis/oksi-sw-licensing/releases/latest/download/install.sh | sudo bash`
 - Installs:
   - CLI shim: `/usr/local/bin/oksi-sw-license`
   - Native helper: `/usr/local/bin/oksi_fingerprint` (if available for your platform)
