@@ -123,8 +123,12 @@ gh-tag:
 	  git push origin "$(VERSION)"; \
 	fi
 
+
 .PHONY: gh-release
-gh-release: dist-all gh-check gh-tag
+gh-release:
+	@$(MAKE) gh-check
+	@$(MAKE) gh-tag
+	@$(MAKE) dist-all
 	@echo "Creating GitHub Release $(VERSION) and uploading assets..."
 	@ASSETS=( \
 	  scripts/distribution/install.sh \
