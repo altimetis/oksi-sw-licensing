@@ -31,7 +31,7 @@ fi
 rm -f \
   /usr/local/bin/oksi-sw-license \
   /usr/local/bin/oksi_fingerprint \
-  /usr/local/bin/oksi-sw-licensing-uninstall || true
+  /usr/local/bin/oksi-sw-license-uninstall || true
 
 rm -rf "$APP_DIR" || true
 

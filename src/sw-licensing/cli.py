@@ -75,10 +75,32 @@ DEFAULT_BASE_URL = "https://api.keygen.sh"         # adjust if self-hosting
 DEFAULT_ACCOUNT_ID = "b4ddeca5-0b33-485f-94bb-20c229fecd44"
 DEFAULT_KEYGEN_PUBKEY = "89d96e37fe21302d0a8ff8f9c2509f480ec6c6f28ec9645514a4043e3b29142b"
 
+
+def _load_cli_version() -> str:
+    """Attempt to read VERSION file; fall back to placeholder."""
+    package_dir = pathlib.Path(__file__).resolve().parent
+    candidates = [
+        package_dir / "VERSION",
+    ]
+    for candidate in candidates:
+        try:
+            text = candidate.read_text(encoding="utf-8").strip()
+        except FileNotFoundError:
+            continue
+        except OSError:
+            continue
+        if text:
+            return text
+    return "X.X.X"
+
+
+CLI_VERSION = _load_cli_version()
+__version__ = CLI_VERSION
+
 # Persistent interactive history
 HISTORY_FILE = pathlib.Path.home() / ".oksi" / "sw-license.history"
 CONFIG_PATH = pathlib.Path.home() / ".oksi" / "sw-license-cli.toml"
-USER_AGENT = "OKSI-SW-License-CLI/1.0 (+https://oksi.ai)"
+USER_AGENT = f"OKSI-SW-License-CLI/{CLI_VERSION} (+https://oksi.ai)"
 
 # File-based token path (cwd by default)
 DEFAULT_TOKEN_FILE = (pathlib.Path(os.getenv("OKSI_API_TOKEN_FILE"))
@@ -732,6 +754,7 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--base-url", default=DEFAULT_BASE_URL)
     p.add_argument("--account-id", default=DEFAULT_ACCOUNT_ID)
     p.add_argument("--interactive", action="store_true", help="Start interactive mode (REPL)")
+    p.add_argument("--version", action="version", version=f"%(prog)s {CLI_VERSION}")
 
     # In interactive mode, a subcommand isn't required. Otherwise it is.
     sub = p.add_subparsers(dest="cmd", required=False)

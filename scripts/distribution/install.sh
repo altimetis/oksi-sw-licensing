@@ -185,7 +185,7 @@ EOS
 chmod +x "$UNINSTALL"
 
 # Convenience symlink in prefix for uninstall
-UNINSTALL_SHIM="$BIN_DIR/oksi-sw-licensing-uninstall"
+UNINSTALL_SHIM="$BIN_DIR/oksi-sw-license-uninstall"
 ln -sf "$UNINSTALL" "$UNINSTALL_SHIM"
 echo "$UNINSTALL_SHIM" >> "$MANIFEST_PATH"
 

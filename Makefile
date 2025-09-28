@@ -87,12 +87,12 @@ install-local: release-stage
 	$(SUDO) bash scripts/distribution/install.sh --base "$(BASE)" --prefix "$(PREFIX)" --root "$(ROOT)"
 	@echo "Installed CLI: $(PREFIX)/bin/oksi-sw-license"
 	@echo "Installed FP:  $(PREFIX)/bin/oksi_fingerprint (if available)"
-	@echo "Manifest:      $(ROOT)/licensing/manifest.txt"
+	@echo "Manifest:      $(ROOT)/sw-licensing/manifest.txt"
 
 .PHONY: uninstall-local
 uninstall-local:
 	@echo "Uninstalling from PREFIX=$(PREFIX) ROOT=$(ROOT) ..."
-	$(SUDO) "$(PREFIX)/bin/oksi-sw-licensing-uninstall" || true
+	$(SUDO) "$(PREFIX)/bin/oksi-sw-license-uninstall" || true
 
 .PHONY: clean
 clean: clean-fingerprint
