@@ -19,7 +19,7 @@ OKSI Software Licensing is a customer CLI and optional native helper that lets y
 ## First Run Checklist
 
 - Confirm install: `oksi-sw-license --version`
-- Log in with your issued token: `oksi-sw-license login`
+- Log in with your user credentials: `oksi-sw-license login`
 - List available products: `oksi-sw-license list-products`
 - Activate the current machine: `oksi-sw-license activate <PRODUCT_ID>`
 
@@ -55,7 +55,7 @@ OKSI Software Licensing is a customer CLI and optional native helper that lets y
 
 ## Uninstall
 
-- Remove all installed components: `sudo /usr/local/bin/oksi-sw-licensing-uninstall`
+- Remove all installed components: `sudo /usr/local/bin/oksi-sw-license-uninstall`
 
 ## Troubleshooting
 
@@ -125,6 +125,5 @@ OKSI Software Licensing is a customer CLI and optional native helper that lets y
 
 - Retrieve your Keygen Account ID from the Keygen dashboard
 - Create product(s) and machine-activation license pools
-- Choose the appropriate token type (user via CLI `login` or customer token)
-- Recommended: enable HTTP response signing and update `DEFAULT_KEYGEN_PUBKEY` if your account key changes
+- Update `DEFAULT_KEYGEN_PUBKEY` and `DEFAULT_KEYGEN_PUBKEY` if they are different
 - When self-hosting Keygen, pass a custom `--base-url`; the host is verified during signature checks

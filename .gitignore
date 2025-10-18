@@ -208,6 +208,7 @@ __marimo__/
 
 # OKSI
 .oksi/
+tmp/
 
 # github
 .github/

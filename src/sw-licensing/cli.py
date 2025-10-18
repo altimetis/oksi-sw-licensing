@@ -72,8 +72,8 @@ from urllib.parse import urlparse, unquote, urljoin
 # ----------------------------
 
 DEFAULT_BASE_URL = "https://api.keygen.sh"         # adjust if self-hosting
-DEFAULT_ACCOUNT_ID = "b4ddeca5-0b33-485f-94bb-20c229fecd44"
-DEFAULT_KEYGEN_PUBKEY = "89d96e37fe21302d0a8ff8f9c2509f480ec6c6f28ec9645514a4043e3b29142b"
+DEFAULT_ACCOUNT_ID = "f330be82-109d-4b48-b758-46c4baca0c73"
+DEFAULT_KEYGEN_PUBKEY = "0101c362212ad503791a8f238e48281a071b21e944c09016e914da746f87073d"
 
 
 def _load_cli_version() -> str:
