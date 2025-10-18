@@ -102,12 +102,15 @@ clean: clean-fingerprint
 # GitHub Releases (gh)
 # ----------------------
 
-VERSION ?= v0.1.0
 # GitHub repository in owner/name form. Auto-detect when possible; override as needed.
 # - Falls back to parsing origin URL if gh isn't configured.
 # - You can override by passing REPO=org/name to make.
 REPO ?= $(shell gh repo view --json nameWithOwner -q .nameWithOwner 2>/dev/null || \
   git remote get-url origin 2>/dev/null | sed -E 's#(git@|https://)([^/:]+)[:/]([^/]+)/([^/.]+)(\\.git)?#\3/\4#' || echo unknown/unknown)
+
+.PHONY: require-version
+require-version:
+	@if [ -z "$(strip $(VERSION))" ]; then echo "VERSION is required. Fix: rerun 'make $(firstword $(MAKECMDGOALS)) VERSION=v1.2.3' with the desired tag." >&2; exit 1; fi
 
 .PHONY: gh-check
 gh-check:
@@ -115,7 +118,7 @@ gh-check:
 	@gh auth status || true
 
 .PHONY: gh-tag
-gh-tag:
+gh-tag: require-version
 	@if git rev-parse "$(VERSION)" >/dev/null 2>&1; then \
 	  echo "Tag $(VERSION) already exists"; \
 	else \
@@ -125,7 +128,7 @@ gh-tag:
 
 
 .PHONY: gh-release
-gh-release:
+gh-release: require-version
 	@$(MAKE) gh-check
 	@$(MAKE) gh-tag
 	@$(MAKE) dist-all
