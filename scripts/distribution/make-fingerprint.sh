@@ -48,7 +48,6 @@ build_one() {
             if command -v x86_64-linux-gnu-g++ >/dev/null 2>&1; then
               cmake_args+=( -DCMAKE_SYSTEM_NAME=Linux \
                             -DCMAKE_SYSTEM_PROCESSOR=x86_64 \
-                            -DCMAKE_C_COMPILER=x86_64-linux-gnu-gcc \
                             -DCMAKE_CXX_COMPILER=x86_64-linux-gnu-g++ )
             else
               echo "[cross] missing x86_64-linux-gnu-g++ toolchain for linux-amd64" >&2; return 1
@@ -62,7 +61,6 @@ build_one() {
             if command -v aarch64-linux-gnu-g++ >/dev/null 2>&1; then
               cmake_args+=( -DCMAKE_SYSTEM_NAME=Linux \
                             -DCMAKE_SYSTEM_PROCESSOR=aarch64 \
-                            -DCMAKE_C_COMPILER=aarch64-linux-gnu-gcc \
                             -DCMAKE_CXX_COMPILER=aarch64-linux-gnu-g++ )
             else
               echo "[cross] missing aarch64-linux-gnu-g++ toolchain for linux-arm64" >&2; return 1

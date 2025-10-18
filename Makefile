@@ -115,7 +115,7 @@ require-version:
 .PHONY: gh-check
 gh-check:
 	@gh --version >/dev/null 2>&1 || { echo "GitHub CLI 'gh' not found. Install from https://cli.github.com/" >&2; exit 1; }
-	@gh auth status || true
+	@gh auth status
 
 .PHONY: gh-tag
 gh-tag: require-version

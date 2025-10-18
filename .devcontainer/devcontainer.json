@@ -1,0 +1,51 @@
+{
+  "name": "OKSI Software Licensing",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": "..",
+    "args": {
+      "VARIANT": "3.11-bookworm"
+    }
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {
+      "version": "latest",
+      "moby": true
+    },
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+  "runArgs": [
+    "--init"
+  ],
+  "mounts": ["source=${env:HOME}/.ssh,target=/home/vscode/.ssh,type=bind,ro"],
+  "containerEnv": {
+    "PY": "/usr/local/bin/python3"
+  },
+  "postCreateCommand": [
+    "bash",
+    "-lc",
+    "make venv"
+  ],
+  "remoteUser": "vscode",
+  "forwardPorts": [
+    8000
+  ],
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "ms-vscode.cpptools",
+        "ms-vscode.cmake-tools",
+        "twxs.cmake",
+        "ms-azuretools.vscode-docker",
+        "github.vscode-github-actions"
+      ],
+      "settings": {
+        "python.defaultInterpreterPath": "${containerWorkspaceFolder}/.venv/bin/python",
+        "cmake.sourceDirectory": "${containerWorkspaceFolder}/src/fingerprint",
+        "cmake.buildDirectory": "${containerWorkspaceFolder}/build/fingerprint"
+      }
+    }
+  }
+}
